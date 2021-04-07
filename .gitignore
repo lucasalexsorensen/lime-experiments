@@ -1,0 +1,5 @@
+*.csv
+.ipynb_checkpoints
+.vscode
+dataset
+__pycache__
