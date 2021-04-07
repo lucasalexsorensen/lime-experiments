@@ -31,7 +31,7 @@ def calculate_score(img_mask, coco_mask):
 
 # evaluate a set
 def evaluate_set(val_df: pd.DataFrame, model, imgs: list, **kwargs):
-    result = val_df.progress_apply(lambda r: evaluate_row(r, model, imgs, **kwargs), axis=1)
+    result = val_df.progress_apply(lambda r: evaluate_row(r, model, imgs, **kwargs), axis=1, result_type='expand')
     return result
 
 # evaluate a single image (i.e. row of the DF)
@@ -82,7 +82,7 @@ def evaluate_row(row, model, imgs: list, **kwargs):
     # compute score
     img_mask = resize(perturb_image(np.ones((img.shape[0],img.shape[1],1)), mask, superpixels), (og_size[0], og_size[1])).squeeze().astype('bool')
     if len(anns) < 1:
-        return None
+        return { 'score': None, 'label': None, 'area_ratio': None, 'idx': None }
     ann_scores = [calculate_score(img_mask, coco.annToMask(ann).astype('bool')) for ann in anns]
     score = max(ann_scores)
     best_ann = np.argmax(ann_scores)
