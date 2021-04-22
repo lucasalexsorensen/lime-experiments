@@ -3,11 +3,8 @@ import numpy as np
 from skimage.transform import resize
 import pandas as pd
 from tensorflow.keras.applications.imagenet_utils import decode_predictions
-from pycocotools.coco import COCO # on windows: python -m pip install pycocotools-windows
-from consts import dataDir, dataType, annFile
-coco = COCO(annFile)
 
-def build_validation_set(model, imagenet_class_to_label: dict) -> (pd.DataFrame, list):
+def build_validation_set(model, coco, imagenet_class_to_label: dict) -> (pd.DataFrame, list):
     imgIds = [coco.getImgIds(catIds=coco.getCatIds(catNms=[term])) for term in ['dog','bear','cat','boat']]
 
     flatten = lambda t: [item for sublist in t for item in sublist]
@@ -52,7 +49,7 @@ def build_validation_set(model, imagenet_class_to_label: dict) -> (pd.DataFrame,
         if imgId == None:
             continue
             
-        val_list.append({ 'idx': idx, 'label': label, 'imagenet_class_to_explain': class_to_explain })
+        val_list.append({ 'idx': idx, 'imgId': imgId, 'label': label, 'imagenet_class_to_explain': class_to_explain })
     val_df = pd.DataFrame.from_records(val_list)
     print('Built validation dataset:')
     print(val_df.label.value_counts())
