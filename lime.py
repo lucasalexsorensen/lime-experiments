@@ -81,8 +81,8 @@ def evaluate_image(row, model, coco, **kwargs):
     
     reg_algs = {
         'linear': LinearRegression(),
-        'lasso': Lasso(),
-        'ridge': Ridge()
+        'lasso': Lasso(alpha=0.05),
+        'ridge': Ridge(alpha=5)
     }
     simpler_model = reg_algs.get(kwargs['reg'])
 
