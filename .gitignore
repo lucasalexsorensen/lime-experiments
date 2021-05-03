@@ -1,4 +1,5 @@
-*.csv
+results/*.csv
+results_old/*.csv
 .ipynb_checkpoints
 .vscode
 dataset
