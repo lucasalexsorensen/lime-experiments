@@ -3,7 +3,7 @@
 N="50 150 250"
 SEG="quickshift felzenszwalb"
 REG="linear ridge lasso"
-SEL="3"
+SEL="auto"
 WEIGHTS="true false"
 
 

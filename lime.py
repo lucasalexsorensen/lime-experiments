@@ -94,8 +94,11 @@ def evaluate_image(row, model, coco, **kwargs):
     coeff = simpler_model.coef_
 
     if kwargs.get('sel') == 'auto':
-        lag = np.diff(-np.sort(-coeff), n=2)
-        num_top_features = np.where(lag > 0)[0][0] + 1
+        try:
+            lag = np.diff(-np.sort(-coeff), n=2)
+            num_top_features = np.where(lag > 0)[0][0] + 1
+        except:
+            num_top_features = 1
     else:
         num_top_features = int(kwargs.get('sel'))
 
@@ -112,6 +115,7 @@ def evaluate_image(row, model, coco, **kwargs):
     # compute score
     img_mask = resize(perturb_image(np.ones((img.shape[0],img.shape[1],1)), mask, superpixels), (og_size[0], og_size[1])).squeeze().astype('bool')
     if len(anns) < 1:
+        # return { 'score': None, 'label': None, 'num_top_features': None, 'area_ratio': None, 'idx': None, 'best_score': None, 'best_score_num_fts': None }
         return { 'score': None, 'label': None, 'area_ratio': None, 'idx': None }
     ann_scores = [calculate_score(img_mask, coco.annToMask(ann).astype('bool')) for ann in anns]
     score = max(ann_scores)
@@ -130,5 +134,20 @@ def evaluate_image(row, model, coco, **kwargs):
         plt.imshow(resize(img, og_size))
         plt.axis('off')
         plt.show()
-        
+
+    best_score = 0
+    best_score_num_fts = None
+
+    # for n_fts in range(1,20):
+    #     top_features = np.argsort(coeff)[-n_fts:]
+    #     mask = np.zeros(N)
+    #     mask[top_features]= True
+    #     img_mask = resize(perturb_image(np.ones((img.shape[0],img.shape[1],1)), mask, superpixels), (og_size[0], og_size[1])).squeeze().astype('bool')
+    #     ann_scores = [calculate_score(img_mask, coco.annToMask(ann).astype('bool')) for ann in anns]
+    #     s = max(ann_scores)
+    #     if s > best_score:
+    #         best_score = s
+    #         best_score_num_fts = n_fts
+
+    # return { 'score': score, 'label': label, 'num_top_features': num_top_features, 'area_ratio': area_ratio, 'idx': idx, 'best_score': best_score, 'best_score_num_fts': best_score_num_fts  }
     return { 'score': score, 'label': label, 'area_ratio': area_ratio, 'idx': idx }
